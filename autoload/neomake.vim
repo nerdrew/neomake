@@ -274,10 +274,20 @@ function! s:Make(options) abort
         endif
     endif
 
+    let title = join(map(copy(enabled_makers), 'v:val.name'), ', ')
+
     if file_mode
-        lgetexpr ''
+        if has('nvim')
+            call setloclist(0, [], '', title)
+        else
+            call setloclist(0, [], '')
+        end
     else
-        cgetexpr ''
+        if has('nvim')
+            call setqflist([], '', title)
+        else
+            call setqflist([], '')
+        end
     endif
     call s:HandleLoclistQflistDisplay(file_mode)
 
@@ -395,9 +405,17 @@ function! s:AddExprCallback(maker) abort
 
     if list_modified
         if file_mode
-            call setloclist(winnr(), list, 'r')
+            if has('nvim')
+                call setloclist(winnr(), list, '', name)
+            else
+                call setloclist(winnr(), list, '')
+            end
         else
-            call setqflist(list, 'r')
+            if has('nvim')
+                call setqflist(list, '', name)
+            else
+                call setqflist(list, '')
+            end
         endif
     endif
 
