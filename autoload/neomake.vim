@@ -346,15 +346,16 @@ endfunction
 
 function! s:AddExprCallback(maker) abort
     let file_mode = get(a:maker, 'file_mode')
-    let place_signs = get(g:, 'neomake_place_signs', 1)
+    let place_signs = get(a:maker, 'place_signs', get(g:, 'neomake_place_signs', 1))
     let list = file_mode ? getloclist(winnr()) : getqflist()
     let list_modified = 0
     let index = file_mode ? s:loclist_nr[winnr()] : s:qflist_nr
     let maker_type = file_mode ? 'file' : 'project'
+    let name = has_key(a:maker, 'name') ? a:maker.name : 'makeprg'
 
     while index < len(list)
         let entry = list[index]
-        let entry.maker_name = has_key(a:maker, 'name') ? a:maker.name : 'makeprg'
+        let entry.maker_name = name
         let index += 1
 
         if has_key(a:maker, 'postprocess')
